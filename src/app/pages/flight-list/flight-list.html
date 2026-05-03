@@ -1,5 +1,80 @@
 <div class="container">
-  <button (click)="sortTable()">Sort By ({{sort}})</button>
+
+  <form [formGroup]="filterForm" class="filters">
+
+    <label>From <input type="date" formControlName="dateFrom"/></label>
+
+    <label>To <input type="date" formControlName="dateTo" /></label>
+
+    <div class="seg">
+      <div class="label">Date From</div>
+      <mat-form-field appearance="outline" class="field">
+        <input
+          matInput
+          placeholder="Date From"
+          [matDatepicker]="depPicker"
+          formControlName="dateFrom">
+        <mat-datepicker-toggle matSuffix [for]="depPicker"></mat-datepicker-toggle>
+        <mat-datepicker #depPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+
+    <label><input type="number" placeholder="RouteId" formControlName="routeId"></label>
+
+    <label>
+      Route
+      <select formControlName="routeId">
+        <option [ngValue]="null">All Routes</option>
+        <option *ngFor="let r of routes" [ngValue]="r.id">
+          r.id
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Status
+      <select formControlName="status">
+        <option value="SCHEDULED">SCHEDULED</option>
+        <option value="BOARDING">BOARDING</option>
+        <option value="DELAYED">DELAYED</option>
+        <option value="CANCELLED">CANCELLED</option>
+        <option value="IN_AIR">IN_AIR</option>
+        <option value="LANDED">LANDED</option>
+      </select>
+    </label>
+
+    <label><input type="text" placeholder="Code" formControlName="code"></label>
+<!--    <label><input type="text" placeholder="Origin" formControlName="origin"></label>-->
+
+    <div class="seg">
+      <div class="label">From</div>
+      <mat-form-field appearance="outline" class="field">
+        <input
+          matInput
+          placeholder="Origin"
+          formControlName="origin"
+        >
+      </mat-form-field>
+    </div>
+
+    <div class="seg">
+      <div class="label">From</div>
+      <mat-form-field appearance="outline" class="field">
+        <input
+          matInput
+          placeholder="Destination"
+          formControlName="destination"
+        >
+      </mat-form-field>
+    </div>
+
+    <button type="button" (click)="applyFilters()">Apply</button>
+    <button type="button" (click)="clearFilters()">Clear</button>
+
+  </form>
+
+<!--  <button (click)="sortTable()">Sort By ({{sort}})</button>-->
   <div *ngIf="loading">Is loading...</div>
 
   <table *ngIf="!loading" border="1" cellpadding="6">
@@ -10,6 +85,9 @@
       <th>Scheduled Arrival</th>
       <th>Route ID</th>
       <th>Flight Status</th>
+      <th>Origin</th>
+      <th>Destination</th>
+
     </tr>
     </thead>
 
@@ -20,6 +98,8 @@
       <td>{{ flight.arrivalTime }}</td>
       <td>{{ flight.routeId }}</td>
       <td>{{ flight.status }}</td>
+      <td>{{ flight.originCity }}</td>
+      <td>{{ flight.destinationCity }}</td>
     </tr>
     </tbody>
   </table>

@@ -7,6 +7,8 @@ export interface FlightResponseDTO {
   departureTime: string;
   arrivalTime: string;
   status: FlightStatus;
+  originCity: string;
+  destinationCity: string;
 }
 
 export interface PageResponse<T> {
