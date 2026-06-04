@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git checkout:*)",
-      "mcp__github__get_pull_request_files"
-    ]
-  }
-}
