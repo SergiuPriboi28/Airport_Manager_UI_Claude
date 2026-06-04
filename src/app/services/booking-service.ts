@@ -27,4 +27,9 @@ export class BookingService {
   cancelBooking(id: number): Observable<BookingResponseDTO> {
     return this.http.delete<BookingResponseDTO>(`${this.url}/${id}`);
   }
+
+  getBookingsByFlight(flightId: number): Observable<BookingResponseDTO[]> {
+    return this.http.get<BookingResponseDTO[]>(`${this.url}/flight/${flightId}`);
+  }
+
 }

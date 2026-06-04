@@ -9,6 +9,8 @@ export interface FlightResponseDTO {
   status: FlightStatus;
   originCity: string;
   destinationCity: string;
+  gate: string;
+  aircraftId: number;
 }
 
 export interface PageResponse<T> {

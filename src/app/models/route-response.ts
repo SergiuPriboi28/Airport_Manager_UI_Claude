@@ -5,7 +5,6 @@ export interface RouteResponseDTO {
   distanceNm: number;
   stdDurationMin: number;
   routeId: number;
-  destinationAirportId: number;
   origin: string;
   destination: string;
 }

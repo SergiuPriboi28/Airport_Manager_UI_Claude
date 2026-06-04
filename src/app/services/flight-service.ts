@@ -5,6 +5,7 @@ import { FlightResponseDTO, PageResponse } from '../models/flight-response';
 import { FlightUpdateDTO } from '../models/flight-update';
 import {Observable} from 'rxjs';
 import { FlightFilterDTO } from "../models/flight-filter";
+import { FlightDetailResponseDTO } from "../models/flight-detail-response";
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,10 @@ export class FlightService {
 
   getFlightById(id: number): Observable<FlightResponseDTO> {
     return this.http.get<FlightResponseDTO>(`${this.url}/${id}`);
+    }
+
+  getFlightDetail(id: number): Observable<FlightDetailResponseDTO> {
+    return this.http.get<FlightDetailResponseDTO>(`${this.url}/${id}`);
     }
 
   getAllFlights(page: number = 0,
@@ -53,6 +58,7 @@ export class FlightService {
       filters.statuses?.forEach((status: string) => {
         params = params.append('statuses', status);
       });
+
 //       return this.http.get<any>(this.url, { params });
       return this.http.get<PageResponse<FlightResponseDTO>>(this.url, { params });
       }

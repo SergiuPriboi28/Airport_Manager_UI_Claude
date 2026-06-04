@@ -12,5 +12,6 @@ export interface FlightFilterDTO{
   statuses?: string[];
   originId?: number;
   destinationId?: number;
+  gate?: string;
 
 }

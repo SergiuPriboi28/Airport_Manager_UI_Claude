@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FlightResponseDTO } from '../../models/flight-response';
 import { FlightService } from '../../services/flight-service';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FlightCardComponent } from '../components/flight-card/flight-card';
 import { FooterComponent } from '../components/footer/footer';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 
+import { MatDialog } from '@angular/material/dialog';
+import { FlightDetailPane, FlightDetailDialogData } from '../flight-detail-pane/flight-detail-pane';
+
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-flight-list',
@@ -40,6 +47,8 @@ import { FooterComponent } from '../components/footer/footer';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatAutocompleteModule,
+    MatSelectModule,
+    MatTableModule,
     FlightCardComponent,
     FooterComponent,
   ],
@@ -56,6 +65,8 @@ export class FlightList implements OnInit{
   sort = 'departureScheduled,asc';
   loading = false;
 
+  private destroy$ = new Subject<void>();
+
   filterForm!: FormGroup;
 
   filters: FlightFilterDTO = {
@@ -68,15 +79,27 @@ export class FlightList implements OnInit{
       destination: undefined,
       statuses: [],
       originId: undefined,
-      destinationId: undefined
+      destinationId: undefined,
+      gate: undefined
       }
+
+
+  readonly statusConfig: Record<string, { label: string; color: string; bg: string; icon: string }> = {
+    SCHEDULED: { label: 'Scheduled', color: '#1565c0', bg: '#e3f2fd', icon: 'schedule' },
+    BOARDING:  { label: 'Boarding',  color: '#e65100', bg: '#fff3e0', icon: 'airline_seat_recline_normal' },
+    DELAYED:   { label: 'Delayed',   color: '#bf360c', bg: '#fbe9e7', icon: 'running_with_errors' },
+    CANCELLED: { label: 'Cancelled', color: '#b71c1c', bg: '#ffebee', icon: 'cancel' },
+    IN_AIR:    { label: 'In Air',    color: '#1b5e20', bg: '#e8f5e9', icon: 'flight' },
+    LANDED:    { label: 'Landed',    color: '#424242', bg: '#f5f5f5', icon: 'flight_land' },
+  };
 
   constructor(
       private flightService: FlightService,
       private routeService: RouteService,
       private router: Router,
       private route: ActivatedRoute,
-      private fb: FormBuilder
+      private fb: FormBuilder,
+      private dialog: MatDialog,
       ){}
 
 
@@ -91,21 +114,26 @@ export class FlightList implements OnInit{
       code: this.fb.control<string>(''),
       routeId: this.fb.control<number | null>(null),
       originId: this.fb.control<number | null>(null),
-      destinationId: this.fb.control<number | null>(null)
+      destinationId: this.fb.control<number | null>(null),
+      gate: this.fb.control<string>(''),
     });
 
+    this.filterForm.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      takeUntil(this.destroy$),
+    ).subscribe(() => {
+      this.page = 0;
+      this.applyFilters();
+    });
+
+    this.loadRoutes();
     this.loadFlights();
   }
 
-  private formatDate(date: Date): string {
-      const y = date.getFullYear();
-      const mo = String(date.getMonth() + 1).padStart(2, '0');
-      const d = String(date.getDate()).padStart(2, '0');
-      return `${y}-${mo}-${d}`;
-    }
-
   private loadRoutes(): void {
       this.routeService.getAllRoutes().subscribe({ next: p => this.routes = p.content });
+
     }
 
   loadFlights(){
@@ -148,8 +176,8 @@ export class FlightList implements OnInit{
 
     this.filters = {
       statuses: raw.statuses ?? [],
-      dateFrom: raw.dateFrom? `${raw.dateFrom}T00:00:00`: undefined,
-      dateTo: raw.dateTo? `${raw.dateTo}T23:59:59`: undefined,
+      dateFrom: raw.dateFrom ? `${this.formatDate(new Date(raw.dateFrom))}T00:00:00` : undefined,
+      dateTo:   raw.dateTo   ? `${this.formatDate(new Date(raw.dateTo))}T23:59:59`   : undefined,
       origin: raw.origin || undefined,
       destination: raw.destination || undefined,
       code: raw.code || undefined,
@@ -161,6 +189,13 @@ export class FlightList implements OnInit{
     this.loadFlights();
   }
 
+  private formatDate(date: Date): string {
+    const y  = date.getFullYear();
+    const mo = String(date.getMonth() + 1).padStart(2, '0');
+    const d  = String(date.getDate()).padStart(2, '0');
+    return `${y}-${mo}-${d}`;
+  }
+
   clearFilters() {
     this.filterForm.reset({
       statuses: [],
@@ -169,12 +204,53 @@ export class FlightList implements OnInit{
       origin: '',
       destination: '',
       code: '',
-      routeId: null
+      routeId: null,
+      status: null,
+      gate: '',
     });
 
     this.filters = {};
     this.page = 0;
     this.loadFlights();
+  }
+
+  readonly displayedColumns = [
+    'code', 'route', 'departure', 'arrival', 'duration', 'gate', 'status', 'actions'
+  ];
+
+  durationLabel(flight: FlightResponseDTO): string {
+      const dep = new Date(flight.departureTime);
+      const arr = new Date(flight.arrivalTime);
+      const diffMs = arr.getTime() - dep.getTime();
+      if (diffMs <= 0) return '—';
+      const totalMinutes = Math.floor(diffMs / 60_000);
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+
+  editFlight(flight: FlightResponseDTO): void {
+    // TODO: open edit dialog
+    console.log('Edit', flight);
+  }
+
+  deleteFlight(flight: FlightResponseDTO): void {
+    // TODO: confirm and call flightService.deleteFlight(flight.id)
+    console.log('Delete', flight);
+  }
+
+  openRow(flight: FlightResponseDTO): void {
+    this.dialog.open(FlightDetailPane, {
+      data: { flight } satisfies FlightDetailDialogData,
+      width: '720px',
+      maxWidth: '95vw',
+      autoFocus: false,
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
