@@ -21,3 +21,4 @@ describe('FlightDetailPane', () => {
     expect(component).toBeTruthy();
   });
 });
+

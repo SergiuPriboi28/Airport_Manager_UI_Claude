@@ -46,6 +46,7 @@ export class FlightDetailPane implements OnInit {
   detail: FlightDetailResponseDTO | null = null;
   passengers: PassengerInfoDTO[] = [];
 
+
   readonly statusConfig: Record<string, { label: string; color: string; bg: string; icon: string }> = {
     SCHEDULED: { label: 'Scheduled', color: '#1565c0', bg: '#e3f2fd', icon: 'schedule'                    },
     BOARDING:  { label: 'Boarding',  color: '#e65100', bg: '#fff3e0', icon: 'airline_seat_recline_normal' },
