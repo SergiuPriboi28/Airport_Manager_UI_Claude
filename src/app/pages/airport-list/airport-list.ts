@@ -32,6 +32,10 @@ import { AirportCreateForm } from '../airport-create-form/airport-create-form';
 
 import { MatDialogModule } from '@angular/material/dialog';
 
+import { AirportViewForm } from '../airport-view-form/airport-view-form';
+
+import { AirportDeleteForm } from '../airport-delete-form/airport-delete-form';
+
 
 @Component({
   selector: 'app-airport-list',
@@ -155,30 +159,64 @@ export class AirportList implements OnInit, OnDestroy {
         autoFocus: false,
       });
 
-      ref.afterClosed().subscribe(result => {
-        if (!result) return;
-        this.airportService.createAirport(result).subscribe({
-          next: () => this.loadAirports(),
-          error: err => console.error('Create failed', err),
-        });
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.airportService.createAirport(result).subscribe({
+        next: () => this.loadAirports(),
+        error: err => console.error('Create failed', err),
+      });
+    });
+  }
+
+  openView(airport: AirportResponseDTO): void {
+    this.dialog.open(AirportViewForm, {
+      data: { airport },
+      width: '500px',
+      autoFocus: false,
       });
   }
 
-//   placeholder methods
-
-  openView(airport: AirportResponseDTO): void {
-    console.log('View', airport);
-  }
-
   openEdit(airport: AirportResponseDTO): void {
-    console.log('Edit', airport);
+   const ref = this.dialog.open(AirportCreateForm, {
+     data: {airport },
+     width: '560px',
+     autoFocus: false,
+     });
+
+   ref.afterClosed().subscribe(result => {
+     if (!result) return;
+     this.airportService.updateAirport(airport.id, result).subscribe({
+       next: () => this.loadAirports(),
+       error: err => console.error('Create failed', err),
+       });
+     });
   }
+
+  //   placeholder methods
 
   openDelete(airport: AirportResponseDTO): void {
-    console.log('Delete', airport);
+    const ref = this.dialog.open(AirportDeleteForm, {
+      data: { airport },
+      width: '480px',
+      autoFocus: false,
+      });
+
+    ref.afterClosed().subscribe((confirmed: boolean) => {
+    if (!confirmed) return;
+
+    this.airports = this.airports.filter( a => a.id !== airport.id);
+    this.applyFilters();
+
+    const totalAfter = this.filteredAirports.length;
+    const lastPage = Math.max(0, Math.ceil(totalAfter / this.pageSize) - 1);
+    if (this.pageIndex > lastPage) {
+      this.pageIndex = lastPage;
+      this.updatePage();
+    }
+    });
   }
 
-//   placeholder methods
+  //   placeholder methods
 
   nextPage(): void {
     if (this.page < this.totalPages - 1) { this.page++; this.loadAirports(); }

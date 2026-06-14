@@ -1,0 +1,21 @@
+.warning-message {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.87);
+  margin: 0 0 8px;
+  max-width: 380px;
+}
+
+.form-error-banner {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  background-color: #fdecea;
+  color: #b71c1c;
+  font-size: 0.875rem;
+}
+
+.btn-spinner {
+  display: inline-block;
+  margin: 0 auto;
+}

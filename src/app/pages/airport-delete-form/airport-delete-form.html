@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Delete Airport</h2>
+
+<mat-dialog-content>
+  <p class="warning-message">
+    Are you sure you want to delete
+    <strong>{{ data.airport.iata }} – {{ data.airport.name }}</strong>?
+    This action cannot be undone.
+  </p>
+
+  <div *ngIf="apiError()" class="form-error-banner">
+    {{ apiError() }}
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [disabled]="loading()" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="warn" [disabled]="loading()" (click)="confirm()">
+    <mat-spinner *ngIf="loading()" diameter="18" class="btn-spinner"></mat-spinner>
+    <span *ngIf="!loading()">Delete</span>
+  </button>
+</mat-dialog-actions>

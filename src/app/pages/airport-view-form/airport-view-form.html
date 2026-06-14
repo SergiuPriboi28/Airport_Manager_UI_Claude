@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Airport Details</h2>
+
+
+<mat-dialog-content>
+  <dl class="airport-details">
+
+    <div class="detail-row">
+      <dt>IATA Code</dt>
+      <dd>{{ data.airport.iata }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>ICAO Code</dt>
+      <dd>{{ data.airport.icao }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>Name</dt>
+      <dd>{{ data.airport.name }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>City</dt>
+      <dd>{{ data.airport.city }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>Country</dt>
+      <dd>{{ data.airport.country }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>Timezone</dt>
+      <dd>{{ data.airport.timezone }}</dd>
+    </div>
+
+    <div class="detail-row">
+      <dt>Airport ID</dt>
+      <dd>{{ data.airport.id }}</dd>
+    </div>
+
+  </dl>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button (click)="close()">Close</button>
+</mat-dialog-actions>
