@@ -1,0 +1,16 @@
+.airport-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+  min-width: 480px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.field-full { width: 100%; }
+.field-half { flex: 1; }
+.field-sm   { flex: 1; }

@@ -1,40 +1,197 @@
 <div class="container">
-  <button class="btn btn-dark">Buton Bootstrap</button>
-  <div class="alert alert-success mt-3">
-    Bootstrap e configurat ✅
+
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon-wrap">
+        <mat-icon class="header-icon">local_airport</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1 class="page-title">Airports</h1>
+        <h1 class="count-badge" *ngIf="!loading">{{ totalElements }} total</h1>
+        <span class="count-badge count-badge--loading" *ngIf="loading">
+          <mat-spinner diameter="12"></mat-spinner>
+        </span>
+      </div>
+    </div>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="createPane()">
+      + Add Airport
+    </button>
   </div>
-  <button mat-raised-button color="primary">
-    Angular Material
-  </button>
-  <button (click)="sortTable()">Sort By ({{sort}})</button>
-  <div *ngIf="loading">Is loading...</div>
 
-  <table *ngIf="!loading" border="1" cellpadding="6">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>City</th>
-      <th>Country</th>
+
+
+
+
+
+
+  <!-- Filter Bar -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filter-row">
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Search</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput formControlName="search" placeholder="Name, city or country…" />
+          <button *ngIf="filterForm.get('search')?.value"
+                  mat-icon-button matSuffix type="button"
+                  (click)="filterForm.get('search')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field filter-field--sm">
+          <mat-label>Country</mat-label>
+          <mat-select formControlName="country">
+            <mat-option [value]="''">All Countries</mat-option>
+            <mat-option *ngFor="let c of countries" [value]="c">{{ c }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field filter-field--xs">
+          <mat-label>IATA Code</mat-label>
+          <input matInput formControlName="iata" placeholder="e.g. OTP" maxlength="3" />
+        </mat-form-field>
+
+        <button mat-stroked-button type="button" class="clear-btn" (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Clear
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+
+
+
+
+  <!-- Table -->
+<!--  <div *ngIf="loading" class="loading-wrap">-->
+<!--    <mat-spinner diameter="48"></mat-spinner>-->
+<!--  </div>-->
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
+
+
+  <mat-table *ngIf="!loading"
+             [dataSource]="pagedAirports"
+             matSort (matSortChange)="onSortChange($event)"
+             class="airports-table mate-elevation-z2">
+<!--    Columns: **IATA**, **ICAO**, **Name**, **City**, **Country**, **Timezone**, **Actions**-->
+    <ng-container matColumnDef="iata">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Iata</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.iata }}</strong>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="icao">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>ICAO</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.icao }}</strong>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.name }}</strong>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="city">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>City</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.city }}</strong>
+      </mat-cell>
+    </ng-container>
+
+
+    <ng-container matColumnDef="country">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Country</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.country }}</strong>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="timezone">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Timezone</mat-header-cell>
+      <mat-cell *matCellDef="let a">
+        <strong>{{ a.timezone }}</strong>
+      </mat-cell>
+    </ng-container>
+
+<!--  Actions Column  -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let a" class="actions-cell">
+        <button mat-icon-button matTooltips="View" (click)="openView(a)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button matTooltips="Edit" (click)="openEdit(a)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button matTooltips="Delete" (click)="openDelete(a)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+
+
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row"></mat-row>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+        No airports found.
+      </td>
     </tr>
-    </thead>
 
-    <tbody>
-    <tr *ngFor="let airport of airports">
-      <td>{{ airport.icao }}</td>
-      <td>{{ airport.name }}</td>
-      <td>{{ airport.city }}</td>
-      <td>{{ airport.country }}</td>
-    </tr>
-    </tbody>
-  </table>
+  </mat-table>
 
-  <div class="pagination">
-    <button (click)="previousPage()"
-          [disabled]="page === 0">Previous</button>
-    <span>Page {{page+1}}...{{totalPages}}</span>
-    <button (click)="nextPage()"
-            [disabled]="page === totalPages-1">Next</button>
-  </div>
+
+<!--  paginator -->
+  <mat-paginator
+    [length]="filteredAirports.length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

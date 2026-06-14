@@ -1,13 +1,213 @@
-.container {
-  margin: 20px;
+/* ── Page Header ──────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-table {
-  margin-top: 20px;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%);
+  box-shadow: 0 4px 14px rgba(123, 31, 162, 0.35);
+  flex-shrink: 0;
+}
+
+.header-icon {
+  color: #ffffff;
+  font-size: 26px;
+  height: 26px;
+  width: 26px;
+}
+
+.header-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.count-badge--loading {
+  padding: 6px 10px;
+}
+
+/* ── Filter Bar ───────────────────────────────────────────── */
+.filter-card {
+  margin-bottom: 20px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-field       { flex: 1 1 220px; min-width: 180px; }
+.filter-field--sm   { flex: 0 1 200px; }
+.filter-field--xs   { flex: 0 1 130px; }
+
+.clear-btn {
+  height: 56px;
+  flex-shrink: 0;
+}
+
+/* ── Error Banner ─────────────────────────────────────────── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #ffebee;
+  color: #b71c1c;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.error-banner mat-icon { flex-shrink: 0; }
+.error-banner span     { flex: 1; }
+
+/* ── Progress Bar ─────────────────────────────────────────── */
+.progress-bar {
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+.airports-table {
   width: 100%;
-  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.pagination {
-  margin-top: 15px;
+.mat-mdc-header-cell {
+  font-weight: 700;
+  font-size: 13px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.clickable-row:hover {
+  background-color: #f5f0ff;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.empty-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px;
+  color: #999;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  opacity: 0.35;
+}
+
+/* ── Detail Grid (View Dialog) ────────────────────────────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* ── Airport Form (Create/Edit Dialog) ────────────────────── */
+.airport-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-field-full { width: 100%; }
+.form-field-half { flex: 1; }
+.form-field-sm   { flex: 1; }
+
+.form-error-banner {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #ffebee;
+  color: #b71c1c;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+
+.clickable-row {
+  transition: background-color 0.15s ease;
+}
+
+.clickable-row:hover {
+  background-color: #f5f0ff;
 }

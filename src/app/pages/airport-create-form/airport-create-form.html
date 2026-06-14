@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>{{ onEdit ? 'Edit Airport' : 'New Airport' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="createForm" class="airport-form">
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="field-sm">
+        <mat-label>IATA Code</mat-label>
+        <input
+          matInput
+          formControlName="iata"
+          maxlength="3"
+          placeholder="e.g. OTP"
+          (input)="onIataInput($event)" />
+        <mat-hint>3 characters</mat-hint>
+        <mat-error *ngIf="createForm.get('iata')?.hasError('required')">Required</mat-error>
+        <mat-error *ngIf="createForm.get('iata')?.hasError('minlength')">Must be exactly 3 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-sm">
+        <mat-label>ICAO Code</mat-label>
+        <input
+          matInput
+          formControlName="icao"
+          maxlength="4"
+          placeholder="e.g. LROP"
+          (input)="onIcaoInput($event)" />
+        <mat-hint>4 characters</mat-hint>
+        <mat-error *ngIf="createForm.get('icao')?.hasError('required')">Required</mat-error>
+        <mat-error *ngIf="createForm.get('icao')?.hasError('minlength')">Must be exactly 4 characters</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="field-full">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g. Henri Coandă International Airport" />
+      <mat-error *ngIf="createForm.get('name')?.hasError('required')">Required</mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="field-half">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city" />
+        <mat-error *ngIf="createForm.get('city')?.hasError('required')">Required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-half">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" />
+        <mat-error *ngIf="createForm.get('country')?.hasError('required')">Required</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="field-full">
+      <mat-label>Timezone</mat-label>
+      <input matInput formControlName="timezone" placeholder="e.g. Europe/Bucharest" />
+      <mat-hint>Use IANA format</mat-hint>
+      <mat-error *ngIf="createForm.get('timezone')?.hasError('required')">Required</mat-error>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="submit()">
+    {{ onEdit ? 'Save Changes' : 'Create' }}
+  </button>
+</mat-dialog-actions>
