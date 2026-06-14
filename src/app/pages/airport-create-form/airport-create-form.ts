@@ -40,16 +40,13 @@ export class AirportCreateForm {
         this.onEdit = !!data?.airport;
 
         this.createForm = this.fb.group({
-              iata:     [data?.airport.iata     ?? '', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
-              icao:     [data?.airport.icao     ?? '', [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
-              name:     [data?.airport.name     ?? '', Validators.required],
-              city:     [data?.airport.city     ?? '', Validators.required],
-              country:  [data?.airport.country  ?? '', Validators.required],
-              timezone: [data?.airport.timezone ?? '', Validators.required],
+              iata:     [data?.airport?.iata     ?? '', [Validators.required, Validators.minLength(3), Validators.maxLength(3)]],
+              icao:     [data?.airport?.icao     ?? '', [Validators.required, Validators.minLength(4), Validators.maxLength(4)]],
+              name:     [data?.airport?.name     ?? '', Validators.required],
+              city:     [data?.airport?.city     ?? '', Validators.required],
+              country:  [data?.airport?.country  ?? '', Validators.required],
+              timezone: [data?.airport?.timezone ?? '', Validators.required],
             });
-
-
-
         }
 
     onIataInput(event: Event): void {
