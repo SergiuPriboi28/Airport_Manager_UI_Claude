@@ -1,107 +1,93 @@
 <div class="container">
 
-  <form [formGroup]="filterForm" class="filters">
-
-    <div class="seg">
-      <div class="label">Date From</div>
-      <mat-form-field appearance="outline" class="field">
-        <input
-          matInput
-          placeholder="Date From"
-          [matDatepicker]="depPicker"
-          formControlName="dateFrom">
-        <mat-datepicker-toggle matSuffix [for]="depPicker"></mat-datepicker-toggle>
-        <mat-datepicker #depPicker></mat-datepicker>
-      </mat-form-field>
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon-wrap">
+        <mat-icon class="header-icon">flight</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1 class="page-title">Flights</h1>
+        <h1 class="count-badge" *ngIf="!loading">{{ totalElements }} total</h1>
+        <span class="count-badge count-badge--loading" *ngIf="loading">
+          <mat-spinner diameter="12"></mat-spinner>
+        </span>
+      </div>
     </div>
-
-    <div class="seg">
-      <div class="label">Date To</div>
-      <mat-form-field appearance="outline" class="field">
-        <input
-          matInput
-          placeholder="Date To"
-          [matDatepicker]="retPicker"
-          formControlName="dateTo">
-        <mat-datepicker-toggle matSuffix [for]="retPicker"></mat-datepicker-toggle>
-        <mat-datepicker #retPicker></mat-datepicker>
-      </mat-form-field>
-    </div>
-
-    <div class="seg">
-      <div class="label">Route</div>
-      <mat-form-field appearance="outline" class="field">
-        <mat-select formControlName="routeId" placeholder="All Routes">
-          <mat-option [value]="null">All Routes</mat-option>
-          <mat-option *ngFor="let r of routes" [value]="r.id">
-            {{ r.origin }} → {{ r.destination }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <div class="seg">
-      <div class="label">Status</div>
-      <mat-form-field appearance="outline" class="field">
-        <mat-select formControlName="status" placeholder="All Statuses">
-          <mat-option [value]="null">All Statuses</mat-option>
-          <mat-option value="SCHEDULED">Scheduled</mat-option>
-          <mat-option value="BOARDING">Boarding</mat-option>
-          <mat-option value="DELAYED">Delayed</mat-option>
-          <mat-option value="CANCELLED">Cancelled</mat-option>
-          <mat-option value="IN_AIR">In Air</mat-option>
-          <mat-option value="LANDED">Landed</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-
-    <div class="seg">
-      <div class="label">Flight Code</div>
-      <mat-form-field appearance="outline" class="field">
-        <mat-select formControlName="code" placeholder="Flight Code">
-          <mat-option [value]="null">Flight Codes</mat-option>
-          <mat-option *ngFor="let f of flights" [value]="f.code">
-            {{ f.code }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <div class="seg">
-      <div class="label">Origin</div>
-      <mat-form-field appearance="outline" class="field">
-        <input
-          matInput
-          placeholder="Origin"
-          formControlName="origin"
-        >
-      </mat-form-field>
-    </div>
-
-    <div class="seg">
-      <div class="label">Destination</div>
-      <mat-form-field appearance="outline" class="field">
-        <input
-          matInput
-          placeholder="Destination"
-          formControlName="destination"
-        >
-      </mat-form-field>
-    </div>
-
-
-<!--    <button type="button" class="btn-apply" (click)="applyFilters()">Apply</button>-->
-    <button type="button" class="btn-clear" (click)="clearFilters()">Clear</button>
-
-
-
-
-  </form>
-
-  <div *ngIf="loading" class="loading-wrap">
-    <mat-spinner diameter="48"></mat-spinner>
   </div>
+
+  <!-- Filter Bar -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filter-row">
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Date From</mat-label>
+          <input
+            matInput
+            [matDatepicker]="depPicker"
+            formControlName="dateFrom">
+          <mat-datepicker-toggle matSuffix [for]="depPicker"></mat-datepicker-toggle>
+          <mat-datepicker #depPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Date To</mat-label>
+          <input
+            matInput
+            [matDatepicker]="retPicker"
+            formControlName="dateTo">
+          <mat-datepicker-toggle matSuffix [for]="retPicker"></mat-datepicker-toggle>
+          <mat-datepicker #retPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field filter-field--sm">
+          <mat-label>Route</mat-label>
+          <mat-select formControlName="routeId">
+            <mat-option [value]="null">All Routes</mat-option>
+            <mat-option *ngFor="let r of routes" [value]="r.id">
+              {{ r.origin }} → {{ r.destination }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field filter-field--sm">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option [value]="null">All Statuses</mat-option>
+            <mat-option value="SCHEDULED">Scheduled</mat-option>
+            <mat-option value="BOARDING">Boarding</mat-option>
+            <mat-option value="DELAYED">Delayed</mat-option>
+            <mat-option value="CANCELLED">Cancelled</mat-option>
+            <mat-option value="IN_AIR">In Air</mat-option>
+            <mat-option value="LANDED">Landed</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field filter-field--xs">
+          <mat-label>Flight Code</mat-label>
+          <input matInput formControlName="code" placeholder="e.g. RO302" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Origin</mat-label>
+          <input matInput formControlName="origin" placeholder="Origin" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Destination</mat-label>
+          <input matInput formControlName="destination" placeholder="Destination" />
+        </mat-form-field>
+
+        <button mat-stroked-button type="button" class="clear-btn" (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Clear
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
 
   <mat-table *ngIf="!loading" [dataSource]="flights" class="flights-table mat-elevation-z2">
 
@@ -176,7 +162,7 @@
     <!-- Actions -->
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
-      <mat-cell *matCellDef="let f">
+      <mat-cell *matCellDef="let f" class="actions-cell">
         <button mat-icon-button color="primary" (click)="editFlight(f)" matTooltip="Edit">
           <mat-icon>edit</mat-icon>
         </button>
@@ -202,14 +188,13 @@
 
   </mat-table>
 
-  <div class="pagination">
-    <button mat-stroked-button (click)="previousPage()" [disabled]="page === 0">
-      <mat-icon>chevron_left</mat-icon> Previous
-    </button>
-    <span class="page-label">Page {{ page + 1 }} of {{ totalPages }}</span>
-    <button mat-stroked-button (click)="nextPage()" [disabled]="page === totalPages - 1">
-      Next <mat-icon>chevron_right</mat-icon>
-    </button>
-  </div>
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="size"
+    [pageIndex]="page"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 
 </div>
