@@ -4,13 +4,14 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LoginRequest, RegisterRequest, AuthResponse } from '../models/auth';
+import { environment } from '../../environments/environment';
 
 const TOKEN_KEY = 'auth_token';
 const ROLES_KEY = 'auth_roles';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8080/api/auth';
+  private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
 
   isLoggedIn = signal(this.hasToken());
 
@@ -63,4 +64,10 @@ export class AuthService {
     localStorage.setItem(ROLES_KEY, JSON.stringify(roles));
     this.isLoggedIn.set(true);
   }
+
+  loginWithGoogle(idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/google`, { idToken });
+  }
+
+
 }

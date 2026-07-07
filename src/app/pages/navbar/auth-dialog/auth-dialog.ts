@@ -9,7 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -24,6 +26,7 @@ import { AuthService } from '../../../services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './auth-dialog.html',
   styleUrls: ['./auth-dialog.css'],
