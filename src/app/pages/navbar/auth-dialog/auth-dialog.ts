@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment/environment';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -31,7 +31,9 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './auth-dialog.html',
   styleUrls: ['./auth-dialog.css'],
 })
-export class AuthDialogComponent {
+export class AuthDialogComponent implements AfterViewInit {
+  @ViewChild('googleBtn') googleBtn?: ElementRef<HTMLDivElement>;
+
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private dialogRef = inject(MatDialogRef<AuthDialogComponent>);
@@ -39,11 +41,27 @@ export class AuthDialogComponent {
 
   hidePasswordLogin = true;
   errorMessage = '';
+  isGoogleLoading = false;
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  ngAfterViewInit(): void {
+    if (!this.googleBtn) return;
+
+    if (typeof google === 'undefined' || !google.accounts?.id) {
+      console.warn('Google Identity Services script did not load; Google sign-in is unavailable.');
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: environment.googleClientId,
+      callback: (resp) => this.onGoogleCredential(resp.credential),
+    });
+    google.accounts.id.renderButton(this.googleBtn.nativeElement, { theme: 'outline', size: 'large' });
+  }
 
   close(): void {
     this.dialogRef.close();
@@ -55,17 +73,35 @@ export class AuthDialogComponent {
 
     const { email, password } = this.loginForm.value;
     this.authService.login({ email: email!, password: password! }).subscribe({
-      next: () => {
-        this.dialogRef.close({ success: true });
-        const role = this.authService.getUserRole();
-        this.router.navigate([role === 'EMPLOYEE' ? '/employee-dashboard' : '/passenger-dashboard']);
-      },
+      next: () => this.handleAuthSuccess(),
       error: () => { this.errorMessage = 'Invalid email or password.'; }
+    });
+  }
+
+  onGoogleCredential(idToken: string): void {
+    this.errorMessage = '';
+    this.isGoogleLoading = true;
+
+    this.authService.loginWithGoogle(idToken).subscribe({
+      next: () => {
+        this.isGoogleLoading = false;
+        this.handleAuthSuccess();
+      },
+      error: () => {
+        this.isGoogleLoading = false;
+        this.errorMessage = 'Google sign-in failed. Please try again.';
+      }
     });
   }
 
   goToRegister(): void {
     this.dialogRef.close();
     this.router.navigate(['/register']);
+  }
+
+  private handleAuthSuccess(): void {
+    this.dialogRef.close({ success: true });
+    const role = this.authService.getUserRole();
+    this.router.navigate([role === 'EMPLOYEE' ? '/employee-dashboard' : '/passenger-dashboard']);
   }
 }

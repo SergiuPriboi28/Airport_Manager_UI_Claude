@@ -77,3 +77,41 @@
   font-size: 13px;
   color: #b00020;
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+  color: #79747e;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0d9e3;
+}
+
+.google-section {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.google-btn {
+  display: flex;
+  justify-content: center;
+}
+
+.google-btn.hidden {
+  display: none;
+}
+
+.google-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LoginRequest, RegisterRequest, AuthResponse } from '../models/auth';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment/environment';
 
 const TOKEN_KEY = 'auth_token';
 const ROLES_KEY = 'auth_roles';
@@ -66,8 +66,8 @@ export class AuthService {
   }
 
   loginWithGoogle(idToken: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/google`, { idToken });
+    return this.http.post<AuthResponse>(`${this.baseUrl}/google`, { idToken }).pipe(
+      tap(res => this.saveToken(res.token, res.roles ?? []))
+      );
   }
-
-
 }
